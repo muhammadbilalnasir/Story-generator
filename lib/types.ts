@@ -24,3 +24,9 @@ export interface Settings {
 export type Genre = "fantasy" | "scifi" | "mystery" | "romance";
 
 export const GENRES: Genre[] = ["fantasy", "scifi", "mystery", "romance"];
+
+export const defaultSettings: Settings = {
+  darkMode: false,
+  autoSave: true,
+  readingFontSize: "medium",
+};

@@ -11,25 +11,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Settings } from "@/lib/types";
+import { defaultSettings, Settings } from "@/lib/types";
 import { getSettings, updateSettings } from "@/lib/storage";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<Settings>(getSettings());
+  const userId = useAuth().user?.uid; // Assuming useAuth() returns userId
+  const [settings, setSettings] = useState<Settings | null>(null);
+
+  useEffect(() => {
+    if (!userId) return; // Ensure userId is available
+
+    const fetchSettings = async () => {
+      const userSettings = await getSettings(userId);
+      setSettings(userSettings);
+      document.documentElement.classList.toggle("dark", userSettings.darkMode);
+    };
+
+    fetchSettings();
+  }, [userId]);
 
   const handleSettingChange = (key: keyof Settings, value: any) => {
+    if (!settings) return;
+    
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
-    updateSettings(newSettings);
+    updateSettings( newSettings,userId!);
 
     if (key === "darkMode") {
       document.documentElement.classList.toggle("dark", value);
     }
   };
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", settings.darkMode);
-  }, []);
+  if (!settings) {
+    return <div className="text-center py-8">Loading settings...</div>;
+  }
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8">
@@ -91,7 +107,7 @@ export default function SettingsPage() {
               variant="destructive"
               onClick={() => {
                 localStorage.clear();
-                setSettings(getSettings());
+                setSettings(defaultSettings);
               }}
             >
               Clear All Data
