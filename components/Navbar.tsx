@@ -1,4 +1,5 @@
 "use client"
+import { useRouter } from "next/navigation"
 
 import Link from "next/link"
 import { useState } from "react"
@@ -20,11 +21,13 @@ export default function Navbar() {
   const { user } = useAuth()
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const router = useRouter()
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
     try {
       await signOut(auth)
+      router.push("/auth/login")
     } catch (error) {
       console.error("Logout failed:", error)
     } finally {

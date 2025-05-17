@@ -22,7 +22,7 @@ export default function LoginPage() {
     setisLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/");
+      router.push("/create");
     } catch (error: any) {
       setError(error.message);
     } finally {
